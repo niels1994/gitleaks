@@ -1,7 +1,7 @@
 - id: gitleaks
   name: Detect hardcoded secrets
   description: Detect hardcoded secrets using Gitleaks
-  entry: gitleaks protect --verbose --redact --staged --additional-config=./leaks_config.toml
+  entry: gitleaks protect --verbose --redact --staged
   language: golang
   pass_filenames: false
 - id: gitleaks-docker
