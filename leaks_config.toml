@@ -1,0 +1,246 @@
+title = "gitleaks config"
+
+# Gitleaks rules are defined by regular expressions and entropy ranges.
+# Some secrets have unique signatures which make detecting those secrets easy.
+# Examples of those secrets would be Gitlab Personal Access Tokens, AWS keys, and Github Access Tokens. 
+# All these examples have defined prefixes like `glpat`, `AKIA`, `ghp_`, etc.
+
+
+
+################################
+######### ESSENT RULES #########
+################################
+
+[[rules]]
+        id = "eon KID"
+        description = "eon kid personal id"
+        regex = '''[A-Z]{1}[0-9]{5}@eon\.com'''
+        tags = ["essent", "custom"]
+
+[[rules]]
+        id = "essent UID"
+        description = "essent personal id"
+        regex = '''((UI)|(UA))[0-9]{6}@rwe\.com'''
+        tags = ["essent", "custom"]
+
+[[rules]]
+        id = "essent RID"
+        description = "old essent personal id"
+        regex = '''R[0-9]{4,5}@rwe\.com'''
+        tags = ["essent", "custom"]
+
+[[rules]]
+        id = "group ID AD"
+        description = "AD group ID"
+        regex = '''group\\srv'''
+        tags = ["essent", "custom"]
+
+
+################################
+###### CRYPTOGRAPHIC KEYS ######
+################################
+
+[[rules]]
+        id = "PKCS8-PK"
+        description = "PKCS8 private key"
+        regex = '''-----BEGIN PRIVATE KEY-----'''
+        tags = ["cryptographic_keys", "custom"]
+
+[[rules]]
+        id = "RSA-PK"
+        description = "RSA private key"
+        regex = '''-----BEGIN RSA PRIVATE KEY-----'''
+        tags = ["cryptographic_keys", "custom"]
+
+[[rules]]
+        id = "OPENSSH-PK"
+        description = "SSH private key"
+        regex = '''-----BEGIN OPENSSH PRIVATE KEY-----'''
+        tags = ["cryptographic_keys", "custom"]
+
+[[rules]]
+        id = "PGP-PK"
+        description = "PGP private key"
+        regex = '''-----BEGIN PGP PRIVATE KEY BLOCK-----'''
+        tags = ["cryptographic_keys", "custom"]
+
+[[rules]]
+        id = "SSH-DSA-PK"
+        description = "SSH (DSA) private key"
+        regex = '''-----BEGIN DSA PRIVATE KEY-----'''
+        tags = ["cryptographic_keys", "custom"]
+
+[[rules]]
+        id = "SSH-EC-PK"
+        description = "SSH (EC) private key"
+        regex = '''-----BEGIN EC PRIVATE KEY-----'''
+        tags = ["cryptographic_keys", "custom"]
+
+
+#################################
+############ CLOUD ##############
+#################################
+
+[[rules]]
+        id = "aws-access-tokens"
+        description = "AWS MANAGER ID"
+        regex = '''(A3T[A-Z0-9]|AKIA|AGPA|AIDA|AROA|AIPA|ANPA|ANVA|ASIA)[A-Z0-9]{16}'''
+        tags = ["key", "AWS"]
+
+[[rules]]
+        description = "AWS cred file info"
+        regex = '''(?i)(aws_access_key_id|aws_secret_access_key)(.{0,20})?=.[0-9a-zA-Z\/+]{20,40}'''
+        tags = ["key", "AWS"]
+
+[[rules]]
+        description = "AWS Secret Key"
+        regex = '''(?i)aws(.{0,20})?(?-i)['\"][0-9a-zA-Z\/+]{40}['\"]'''
+        tags = ["key", "AWS"]
+
+[[rules]]
+        description = "AWS MWS key"
+        regex = '''amzn\.mws\.[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}'''
+        tags = ["key", "AWS", "MWS"]
+
+[[rules]]
+        id = "gcp-service-account"
+        description = "Google (GCP) Service-account"
+        regex = '''\"type\": \"service_account\"'''
+        tags = ["key", "GCP", "service-account"]
+
+
+#################################
+############# GIT ###############
+#################################
+
+[[rules]]
+        id = "gitlab-personal-access-token"
+        description = "GitLab Personal Access Token"
+        regex = '''glpat-[0-9a-zA-Z\-]{20}'''
+        tags = ["git", "access-token", "gitlab"]
+
+[[rules]]
+        id = "github-personal-access-token"
+        description = "Github Personal Access Token"
+        regex = '''ghp_[0-9a-zA-Z]{36}'''
+        tags = ["git", "access-token", "github"]
+
+[[rules]]
+        id = "github-oauth-access-token"
+        description = "Github OAuth Access Token"
+        regex = '''gho_[0-9a-zA-Z]{36}'''
+        tags = ["git", "access-token", "github"]
+
+[[rules]]
+        id = "github-app-access-token"
+        description = "Github App Token"
+        regex = '''(ghu|ghs)_[0-9a-zA-Z]{36}'''
+        tags = ["git", "access-token", "github"]
+
+[[rules]]
+        id = "github-access-refresh-token"
+        description = "Github Refresh Token"
+        regex = '''ghr_[0-9a-zA-Z]{76}'''
+        tags = ["git", "access-token", "github"]
+
+[[rules]]
+        id = "bitbucket-client-id"
+        description = "Bitbucket client ID"
+        regex = '''(?i)(bitbucket[a-z0-9_ .\-,]{0,25})(=|>|:=|\|\|:|<=|=>|:).{0,5}['\"]([a-z0-9]{32})['\"]'''
+        tags = ["git", "client-id", "bitbucket"]
+        secretGroup = 3
+
+[[rules]]
+        id = "bitbucket-client-secret"
+        description = "Bitbucket client secret"
+        regex = '''(?i)(bitbucket[a-z0-9_ .\-,]{0,25})(=|>|:=|\|\|:|<=|=>|:).{0,5}['\"]([a-z0-9_\-]{64})['\"]'''
+        tags = ["git", "client-secret", "bitbucket"]
+        secretGroup = 3
+
+
+#################################
+############ OTHERS #############
+#################################
+
+[[rules]]
+        id = "password-in-url"
+        description = "Password in URL"
+        regex = '''[a-zA-Z]{3,10}:\/\/[^$]{3,20}:[^$][^:@]{3,40}@.{1,100}'''
+        tags = ["proxy", "credentials"]
+
+[[rules]]
+        id = "credential-sensitive-extension"
+        description = "File name extensions of credentials"
+	file = '''(?i)\.(pgpass|pem|key)'''
+	tags = ["file", "credentials"]
+
+[[rules]]
+        id = "credential-sensitive-filename"
+	description = "File names of credentials"
+	file = '''(?i)^(id_rsa|passwd|pgpass|shadow)'''
+	tags = ["file", "credentials"]
+
+[[rules]]
+        id = "slack-access-token"
+        description = "Slack token"
+        regex = '''xox[baprs]-([0-9a-zA-Z]{10,48})?'''
+        tags = ["slack", "access-token"]
+
+[[rules]]
+        id = "npm-access-token"
+        description = "npm access token"
+        regex = '''['\"](npm_(?i)[a-z0-9]{36})['\"]'''
+        tags = ["npm", "access-token"]
+
+[[rules]]
+        id = "slack-web-hook"
+        description = "Slack Webhook"
+        regex = '''https://hooks.slack.com/services/T[a-zA-Z0-9_]{8}/B[a-zA-Z0-9_]{8}/[a-zA-Z0-9_]{24}'''
+        tags = ["slack", "web-hook"]
+
+[[rules]]
+        id = "pypi-upload-token"
+        description = "PyPI upload token"
+        regex = '''pypi-AgEIcHlwaS5vcmc[A-Za-z0-9-_]{50,1000}'''
+        tags = ["python", "upload-token"]
+
+[[rules]]
+        id = "atlassian-api-token"
+        description = "Atlassian API token"
+        regex = '''(?i)(atlassian[a-z0-9_ .\-,]{0,25})(=|>|:=|\|\|:|<=|=>|:).{0,5}['\"]([a-z0-9]{24})['\"]'''
+        tags = ["atlassian", "api-token"]
+        secretGroup = 3
+
+[[rules]]
+        id = "hashicorp-tf-api-token"
+        description = "Hashicorp Terraform user/org API token"
+        regex = '''['\"](?i)[a-z0-9]{14}\.atlasv1\.[a-z0-9-_=]{60,70}['\"]'''
+        tags = ["terraform", "api-token"]
+
+[[rules]]
+        id = "postman-api-token"
+        description = "Postman API token"
+        regex = '''PMAK-(?i)[a-f0-9]{24}\-[a-f0-9]{34}'''
+        tags = ["postman", "api-token"]
+
+[[rules]]
+        description = "Generic API key"
+        regex = '''(?i)(api_key|apikey)(.{0,20})?['|"][0-9a-zA-Z]{32,45}['|"]'''
+        tags = ["key", "API", "generic"]
+
+[[rules]]
+        description = "Generic Secret"
+        regex = '''(?i)secret(.{0,20})?['|"][0-9a-zA-Z]{32,45}['|"]'''
+        tags = ["key", "Secret", "generic"]
+
+[allowlist]
+        description = "global allow lists"
+        regexes = [
+            '''(?i)Password=XXXXXX''',
+            '''(?i)http:\/\/[a-zA-z]*:password@[a-zA-Z]*''',
+            '''(?i)http:\/\/[a-zA-z]*:baasadmin@[a-zA-Z]*'''
+        ]
+        paths = [
+            '''leaks_config.toml''',
+            '''.(mdx|js|js.map)$'''
+        ]
